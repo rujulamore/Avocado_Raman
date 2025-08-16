@@ -42,7 +42,7 @@ class WarmupCosineLR:
             param_group['lr'] = lr
 
 
-# 自定义数据集类 # Define custom dataset class
+ # Define custom dataset class
 class CustomDataset(Dataset):
     def __init__(self, features, labels):
         self.features = features
@@ -57,16 +57,16 @@ class CustomDataset(Dataset):
 
 # interpolation data
 def interpo(x, y, start, end, points, kind='linear'):
-    # 生成新的采样点 # Generate new sampling points
+     # Generate new sampling points
     xnew = np.linspace(start, end, points)
     y_update = []
     f = []
     for i in range(len(y)):
         y_update.append([])
-        # 创建插值函数 # Create interpolation function
+         # Create interpolation function
         fi = interpolate.interp1d(x[i], y[i], kind=kind, bounds_error=False, fill_value=0)
         f.append(fi)
-        # 计算插值结果 # Calculate interpolation results
+         # Calculate interpolation results
         ynew = fi(xnew)
         y_update[i].append(ynew)
 
