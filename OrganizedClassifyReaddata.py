@@ -25,7 +25,7 @@ if class_1 is None:
     class_1 = ''
 
 
-# 读取xlsx文件 # Read xlsx file
+# Read xlsx file
 # batchnum = "B1+B2Classify" # including everything
 # batchnum = "B1+B2_normal" # including B1 remained and B2 removed abnormal
 # batchnum = "B1+B2allnormal" # including both B1 and B2 removed abnormal data
@@ -39,17 +39,17 @@ csv_dir = f'dataset/data/{batchnum}/'
 mapping_dict = np.load(f'dataset/mapping_file{batchnum}{class_1}.npy', allow_pickle=True).item()
 
 
-feature_data = [] # 表示特征序列 # Feature list
-label_list = []   # 硬度值序列 # Firmness list
-inner_images = [] # 表示牛油果内部颜色 # Inner color of avocado
+feature_data = [] # Feature list
+label_list = []   # Firmness list
+inner_images = []  # Inner color of avocado
 
 keys = list(mapping_dict.keys())
 
-for filename in os.listdir(csv_dir):  # 遍历 CSV 文件夹 # Iterate over CSV folder
+for filename in os.listdir(csv_dir): # Iterate over CSV folder
     if os.path.splitext(filename)[0] + ".xlsx" in keys:
-        file_path = os.path.join(csv_dir, filename)  # 修改为 CSV 文件路径 # Change to CSV file path
+        file_path = os.path.join(csv_dir, filename)   # Change to CSV file path
         df = pd.read_csv(file_path)  
-        features = df.iloc[:, 2].values # 表示单个raman特征 # Represents a single Raman feature
+        features = df.iloc[:, 2].values  # Represents a single Raman feature
         
         feature_data.append(features) 
         feature_key = os.path.splitext(filename)[0]
@@ -63,16 +63,14 @@ inner_images = df.iloc[:, 2].values
 # label_array = df.iloc[:, 11].values
 label_array = df['Label'].values
 
-# 读取CSV文件 # Read CSV file
+ # Read CSV file
 df = pd.read_csv(f'dataset/data/B1+B2Classify/RS20240205130708_P19100983.csv')
 raman = df.iloc[:,1].values
 ramans = [raman for _ in range(len(label_list))]
 
-
-# 统计 label_array 中每个元素的个数 # Count the number of each element in label_array
+ # Count the number of each element in label_array
 counter = Counter(label_array)
-
-# 输出等于0、1、2的项的个数 # Output the count of elements equal to 0, 1, and 2
+ # Output the count of elements equal to 0, 1, and 2
 count_0 = counter[0]
 count_1 = counter[1]
 count_2 = counter[2]
@@ -80,9 +78,7 @@ print(f'Number of elements under ripe: {count_0}')
 print(f'Number of elements ripe: {count_1}')
 print(f'Number of elements over ripe: {count_2}')
 
-# 切片操作
-
-# 如果不切片的话 # If not slicing 135-2500
+ # If not slicing 135-2500
 if start_end == "135-2500":
     cut_feature_data = feature_data
     cut_ramans = ramans
@@ -109,15 +105,15 @@ points = 1024
 
 cut_feature_data = torch.tensor(np.array(cut_feature_data), dtype=torch.float32)
 
-# 插值 # Interpolation
-x_data = interpo(cut_ramans, cut_feature_data, start, end, points) # 插值后的特征 # Interpolated features
+ # Interpolation
+x_data = interpo(cut_ramans, cut_feature_data, start, end, points)  # Interpolated features
 
 tensorFeatures = torch.tensor(x_data, dtype=torch.float32)
 tensorLabels = torch.tensor(label_array, dtype=torch.long)
 
 # split dataset
 
-# 按6 1 3进行划分数据集 # Split dataset in a 6:1:3 ratio
+ # Split dataset in a 6:1:3 ratio
 train_features, temp_features, train_labels, temp_labels = train_test_split(tensorFeatures, tensorLabels, test_size=0.4, random_state=42)
 val_features, test_features, val_labels, test_labels = train_test_split(temp_features, temp_labels, test_size=0.75, random_state=42)
 
@@ -128,7 +124,6 @@ save_path = 'data_split_train_val_test'
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
-# 保存数据到本地
 with open(os.path.join(save_path,filename), 'wb') as f:
     pickle.dump({
         'train_features': train_features,
