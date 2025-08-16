@@ -53,7 +53,7 @@ if args.model == 'dl':
     model = torch.load(args.weightfile)
 
     ## test
-    model.eval()  # 设置模型为评估模式 # Set model to evaluation mode
+    model.eval()  # Set model to evaluation mode
     test_running_loss = 0.0
     test_running_corrects = 0
     all_preds = []
