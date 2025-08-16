@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 
-# 定义CNN模型 # Define CNN model
+ # Define CNN model
 class CNNClassifier(nn.Module):
     def __init__(self, num_classes, dropout_prob, sequence_length):
         super(CNNClassifier, self).__init__()
@@ -51,7 +51,7 @@ class BN_CNNClassifier(nn.Module):
 
 
 
-# 定义更深的CNN模型 # Define deeper CNN model
+# Define deeper CNN model
 class DeepCNNClassifier(nn.Module):
     def __init__(self, num_classes, dropout_prob, sequence_length):
         super(DeepCNNClassifier, self).__init__()
@@ -109,7 +109,7 @@ class BN_DeepCNNClassifier(nn.Module):
         x = self.fc3(x)
         return x
     
-# 定义更深的CNN模型 # Define even deeper CNN model
+ # Define even deeper CNN model
 class MoreDeeperCNNClassifier(nn.Module):
     def __init__(self, num_classes, dropout_prob, sequence_length):
         super(MoreDeeperCNNClassifier, self).__init__()
@@ -182,7 +182,7 @@ class BN_MoreDeeperCNNClassifier(nn.Module):
         x = self.fc4(x)
         return x
     
-# 定义超级深的CNN模型 # Define super deep CNN model
+ # Define super deep CNN model
 class SuperDeeperCNNClassifier(nn.Module):
     def __init__(self, num_classes, dropout_prob, sequence_length):
         super(SuperDeeperCNNClassifier, self).__init__()
@@ -362,7 +362,7 @@ class ResNet1D(nn.Module):
     def __init__(self, block, layers, num_classes=1000, dropout_prob = 0.4):
         super(ResNet1D, self).__init__()
         self.inplanes = 64
-        self.dropout_input = nn.Dropout(p=0.2)  # 在输入层添加Dropout # Add Dropout at input layer
+        self.dropout_input = nn.Dropout(p=0.2)   # Add Dropout at input layer
         self.conv1 = nn.Conv1d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm1d(64)
         self.relu = nn.ReLU(inplace=True)
@@ -372,7 +372,7 @@ class ResNet1D(nn.Module):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
-        self.dropout = nn.Dropout(dropout_prob)  # 添加Dropout层 # Add Dropout layer
+        self.dropout = nn.Dropout(dropout_prob)   # Add Dropout layer
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
@@ -403,7 +403,7 @@ class ResNet1D(nn.Module):
 
 
     def forward(self, x):
-        x = self.dropout_input(x)  # 在输入层应用Dropout # Apply Dropout at input layer
+        x = self.dropout_input(x)   # Apply Dropout at input layer
         # print(f"Input shape: {x.shape}")
         x = self.conv1(x)
         # print(f"After conv1: {x.shape}")
@@ -427,7 +427,7 @@ class ResNet1D(nn.Module):
         # print(f"After avgpool: {x.shape}")
         x = torch.flatten(x, 1)
         # print(f"After flatten: {x.shape}")
-        x = self.dropout(x)  # 在全连接层前应用Dropout # Apply Dropout before fully connected layer
+        x = self.dropout(x)   # Apply Dropout before fully connected layer
         x = self.fc(x)
         # print(f"After fc: {x.shape}")
 
