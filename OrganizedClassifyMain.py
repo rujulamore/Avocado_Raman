@@ -81,20 +81,16 @@ def pca(train_features, train_labels, weightfile):
     reduced_data = pca.transform(train_features)
     # print(reduced_data.shape)
 
-    # 获取主成分载荷
-    loadings = pca.components_.T  # shape 为 (n_features, n_components)
+    loadings = pca.components_.T  # shape  (n_features, n_components)
 
-    # 设置波数范围
     wave_numbers = np.linspace(300, 1900, train_features.shape[1])
 
-    # 创建保存目录
     save_path = 'pca'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    # 计算每个波数在主成分中的贡献，并保存图像
     plt.figure(figsize=(10, 6))
-    for i in range(3):  # 可视化前三个主成分
+    for i in range(3): 
         plt.plot(wave_numbers, loadings[:, i], label=f'PC{i+1}')
     plt.xlabel('Wave Number')
     plt.ylabel('Contribution')
@@ -103,20 +99,17 @@ def pca(train_features, train_labels, weightfile):
     plt.savefig(os.path.join(save_path, f'{weightfile}_contributions.png'))
     plt.close()
 
-    # 打印主成分贡献率
     explained_variance_ratios = pca.explained_variance_ratio_
 
-    # # 列出每个主成分的贡献率
     # for i, ratio in enumerate(explained_variance_ratios):
     #     print(f"Principal Component {i+1}: {ratio*100:.2f}%")
 
-    # 创建类别标签的颜色映射
     categories = np.unique(train_labels)
     label_mapping = {0: 'Unripe', 1: 'Ripe', 2: 'Overripe'}
     colors = ['#B8D7B3', '#59932D', '#414114']  
     category_colors = {category: colors[i] for i, category in enumerate(categories)}
 
-    # 2D PCA 可视化并保存图像
+    # 2D PCA
     plt.figure(figsize=(8, 6))
     for category in categories:
         indices = train_labels == category
@@ -128,32 +121,31 @@ def pca(train_features, train_labels, weightfile):
     plt.savefig(os.path.join(save_path, f'{weightfile}_2d.png'))
     plt.close()
 
-    # 3D PCA 可视化并保存图像
+    # 3D PCA 
     fig = plt.figure(figsize=(18, 10))
     ax = fig.add_subplot(111, projection='3d')
 
-    # 绘制 3D PCA 数据点
+    #  3D PCA 
     for category in categories:
         indices = train_labels == category
         ax.scatter(reduced_data[indices, 0], reduced_data[indices, 1], reduced_data[indices, 2], 
                    c=category_colors[category], label=label_mapping[category], alpha=0.6)
 
-    # 设置轴标签，字体为 Arial，字号为 14
+    #  Arial， 14
     ax.set_xlabel(f'PC1 ({explained_variance_ratios[0]*100:.1f}%)', weight='bold', fontsize=14, fontname='Arial')
     ax.set_ylabel(f'PC2 ({explained_variance_ratios[1]*100:.1f}%)', weight='bold', fontsize=14, fontname='Arial')
     ax.set_zlabel(f'PC3 ({explained_variance_ratios[2]*100:.1f}%)', weight='bold', fontsize=14, fontname='Arial')
 
-    # 设置 ticks 字体为 Arial，字号为 14
+    #  ticks Arial， 14
     ax.tick_params(axis='both', which='major', labelsize=14)
     ax.xaxis.set_tick_params(labelsize=14)
     ax.yaxis.set_tick_params(labelsize=14)
     ax.zaxis.set_tick_params(labelsize=14)
 
-    # 调整图例字体
     handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, loc='upper right', bbox_to_anchor=(0.78, 0.75), fontsize=14, prop={'family': 'Arial'})
 
-    # 保存 3D 图像
+    #  3D 
     plt.savefig(os.path.join(save_path, f'{weightfile}_3d.png'))
     plt.close()
 
@@ -187,12 +179,9 @@ num_epochs = args.epoch  # Number of training epochs
 weightfile = args.weightfile # weight file save path
 
 
-
-# 从本地加载数据
 with open(dataset, 'rb') as f:
     data = pickle.load(f)
 
-# 重新分配加载的数据
 train_features = data['train_features']
 train_labels = data['train_labels']
 
@@ -206,11 +195,10 @@ pca(train_features, train_labels, weightfile)
 
 
 # synthetic data
-# 记录每个类别的数量 # record the number
+# record the number
 train_labels_numpy = train_labels.numpy()
 class_counts = Counter(train_labels_numpy)
 
-# 记录majority和minority的类别名
 majority_class = max(class_counts, key=class_counts.get)
 minority_classes = [cls for cls in class_counts if cls != majority_class]
 
@@ -237,7 +225,7 @@ print("-" * 50)
 # SHIFT = 0.2
 # SIGMA = 0.00001
 
-# # 位移操作 # Shift operation
+ # Shift operation
 # def shift(X, Y): 
 #     X_pre = []
 #     Y_pre = []
@@ -255,7 +243,7 @@ print("-" * 50)
 #             Y_pre.append(Y[i])
 #     return np.array(X_pre), np.array(Y_pre)
 
-# # 噪声操作 # Noise operation
+ # Noise operation
 # def noise(X, Y):
 #     X_pre = []
 #     Y_pre = []
@@ -274,13 +262,13 @@ print("-" * 50)
 #             Y_pre.append(Y[i])
 #     return np.array(X_pre), np.array(Y_pre)
 
-# # # 进行位移操作 # Perform shift operation
+ # Perform shift operation
 # X_shifted, Y_shifted = shift(train_features_norm.tolist(), trainl.tolist())
 
-# # # 进行噪声操作 # Perform noise operation
+ # Perform noise operation
 # train_features_norm_aug, trainl_aug = noise(X_shifted, Y_shifted)
 
-##  归一化 # normalize
+ # normalize
 
 scaler = Normalizer(norm='max')
 
@@ -297,7 +285,7 @@ with open(f'{scaler_path}/{weightfile}.pkl', 'wb') as f:
 
 
 if not args.model =='SVC' or args.model == 'RandomForestClassifier':
-    # 创建数据集和数据加载器 # Create datasets and data loaders
+     # Create datasets and data loaders
     train_dataset = CustomDataset(train_features_norm, trainl)
     # train_dataset = CustomDataset(train_features_norm_aug, trainl_aug)
     val_dataset = CustomDataset(val_features, val_labels)
@@ -306,19 +294,19 @@ if not args.model =='SVC' or args.model == 'RandomForestClassifier':
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
-    # 超参数设置 # Hyperparameter settings
-    learning_rate = 0.0001  # 学习率 # Learning rate
-    warmup_epochs = 10  # 热身轮数 # Warmup epochs
+    # Hyperparameter settings
+    learning_rate = 0.0001   # Learning rate
+    warmup_epochs = 10   # Warmup epochs
 
 
 
 
-    # # 计算类权重 # Calculate class weights
+     # Calculate class weights
     # total_samples = len(train_labels)
     # class_counts = np.bincount(train_labels)
     # class_weights = [total_samples / (len(class_counts) * count) for count in class_counts]
     # class_weights = torch.tensor(class_weights, dtype=torch.float32).to(device)
-    # 使用加权交叉熵损失 # Use weighted cross-entropy loss
+     # Use weighted cross-entropy loss
     # criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     criterion = nn.CrossEntropyLoss()
@@ -330,10 +318,10 @@ if not args.model =='SVC' or args.model == 'RandomForestClassifier':
     train_losses = []
     val_losses = []
     best_val_loss = np.inf
-    patience = 10  # 设置早停的耐心值 # Set patience for early stopping
+    patience = 10   # Set patience for early stopping
     trigger_times = 0
 
-    # 训练模型 # Train the model
+     # Train the model
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         print('-' * 10)
@@ -346,20 +334,20 @@ if not args.model =='SVC' or args.model == 'RandomForestClassifier':
             inputs = inputs.to(device)
             labels = labels.to(device)
 
-            # 零化参数梯度 # Zero the parameter gradients
+             # Zero the parameter gradients
             optimizer.zero_grad()
 
             # print(inputs.shape)
-            # 前向传播 # Forward pass
+            # Forward pass
             outputs = model(inputs)
             _, preds = torch.max(outputs, 1)
             loss = criterion(outputs, labels)
 
-            # 反向传播和优化 # Backward pass and optimize
+             # Backward pass and optimize
             loss.backward()
             optimizer.step()
 
-            # 统计 # Statistics
+            # Statistics
             running_loss += loss.item() * inputs.size(0)
             running_corrects += torch.sum(preds == labels.data)
 
@@ -369,7 +357,7 @@ if not args.model =='SVC' or args.model == 'RandomForestClassifier':
         train_losses.append(epoch_loss)
         print('Loss: {:.4f} Acc: {:.4f}'.format(epoch_loss, epoch_acc))
 
-        model.eval()  # 设置模型为评估模式 # Set model to evaluation mode
+        model.eval()   # Set model to evaluation mode
         val_running_loss = 0.0
         val_running_corrects = 0
 
@@ -394,11 +382,11 @@ if not args.model =='SVC' or args.model == 'RandomForestClassifier':
         # scheduler.step(val_loss)
         scheduler.step(epoch)
 
-        # 早停机制 # Early stopping mechanism
+         # Early stopping mechanism
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             trigger_times = 0
-            # 保存最佳模型 # Save the best model
+             # Save the best model
             torch.save(model.state_dict(), 'best_model.pth')
         else:
             trigger_times += 1
